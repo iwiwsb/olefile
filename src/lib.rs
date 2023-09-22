@@ -97,8 +97,8 @@ mod ole_file {
         first_mini_fat_sector_location: u32, // This integer field contains the starting sector number for the mini FAT
         num_of_mini_fat_sectors: u32, // This integer field contains the count of the number of mini FAT sectors in the compound file.
         first_difat_sector_location: u32, // This integer field contains the starting sector number for the DIFAT
-        num_of_difat_sectors: u32,
-        difat: [u32; 109],
+        num_of_difat_sectors: u32, // This integer field contains the count of the number of DIFAT sectors in the compound file.
+        difat: [u32; 109], // This array of 32-bit integer fields contains the first 109 FAT sector locations of the compound file.
     }
 
     struct OleDirectoryEntry {
