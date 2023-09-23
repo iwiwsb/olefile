@@ -1,10 +1,11 @@
 use std::fmt::Display;
 
+/// A GUID, also known as a UUID, which is a 16-byte structure, intended to serve as a unique identifier for an object.
 pub struct CLSID {
     data1: u32,
     data2: u16,
     data3: u16,
-    data4: u64,
+    data4: [u8; 8],
 }
 
 impl Display for CLSID {
@@ -13,11 +14,13 @@ impl Display for CLSID {
     }
 }
 
+/// A 64-bit value that represents the number of 100-nanosecond intervals that have elapsed since January 1, 1601, Coordinated Universal Time (UTC)
 pub struct FileTime {
     low_date_time: u32,
     high_date_time: u32,
 }
 
+/// Initialization data for a printer
 pub struct DevModeA {
     device_name: [u8; 32], // This field is a 32-element array of 8-bit ANSI characters.
     form_name: [u8; 32],   // This field is a 32-element array of 8-bit ANSI characters.

@@ -55,5 +55,5 @@ const CF_METAFILEPICT: u16 = 3;
 const CF_DIB: u16 = 8;
 const CF_ENHMETAFILE: u16 = 0xE;
 
-mod data_structures;
-mod ole_file;
+pub mod data_structures;
+pub mod ole_file;
