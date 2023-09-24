@@ -1,3 +1,4 @@
+#[forbid(unsafe_code)]
 use crate::data_structures::FileTime;
 
 use crate::data_structures::CLSID;
@@ -12,32 +13,123 @@ const FATSECT: u32 = 0xFFFFFFFD; // Specifies a FAT sector in the FAT
 const ENDOFCHAIN: u32 = 0xFFFFFFFE; // End of a linked chain of sectors
 const FREESECT: u32 = 0xFFFFFFFF; // Specifies an unallocated sector in the FAT, Mini FAT, or DIFAT
 
-struct OleFileHeader {
-    header_signature: [u8; 8], // Identification signature for the compound file structure, and MUST be set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1
-    header_clsid: [u8; 16],    // Reserved and unused class ID that MUST be set to all zeroes
-    minor_version: u16, // Version number for nonbreaking changes. This field SHOULD be set to 0x003E if the major version field is either 0x0003 or 0x0004
-    major_version: u16, // Version number for breaking changes. This field MUST be set to either 0x0003 (version 3) or 0x0004 (version 4)
-    byte_order: u16, //  This field MUST be set to 0xFFFE. This field is a byte order mark for all integer fields, specifying little-endian byte order.
-    sector_shift: u16, // This field MUST be set to 0x0009, or 0x000c, depending on the Major Version field. This field specifies the sector size of the compound file
-    // as a power of 2. If Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes. If Major Version is 4, the Sector Shift MUST be 0x000C,
-    // specifying a sector size of 4096 bytes.
-    mini_cector_shift: u16, // This field MUST be set to 0x0006. This field specifies the sector size of the Mini Stream as a power of 2.
-    // The sector size of the Mini Stream MUST be 64 bytes.
-    reserved: [u8; 6],                // This field MUST be set to all zeroes
-    num_of_dir_sectiors: Option<u32>, // This integer field contains the count of the number of directory sectors in the compound file. If Major Version is 3,
-    // the Number of Directory Sectors MUST be zero. This field is not supported for version 3 compound files.
-    num_of_fat_sectors: u32, // This integer field contains the count of the number of FAT sectors in the compound file.
-    first_dir_sector_location: u32, // This integer field contains the starting sector number for the directory stream.
-    transaction_sig_num: u32, // This integer field MAY contain a sequence number that is incremented every time the compound file is saved by an implementation that supports
-    // file transactions. This is the field that MUST be set to all zeroes if file transactions are not implemented
-    mini_stream_cutoff_size: u32, // This integer field MUST be set to 0x00001000. This field specifies the maximum size of a user-defined data stream that is allocated
-    // from the mini FAT and mini stream, and that cutoff is 4,096 bytes. Any user-defined data stream that is greater than or equal to this cutoff size must be allocated
-    // as normal sectors from the FAT.
-    first_mini_fat_sector_location: u32, // This integer field contains the starting sector number for the mini FAT
-    num_of_mini_fat_sectors: u32, // This integer field contains the count of the number of mini FAT sectors in the compound file.
-    first_difat_sector_location: u32, // This integer field contains the starting sector number for the DIFAT
-    num_of_difat_sectors: u32, // This integer field contains the count of the number of DIFAT sectors in the compound file.
-    difat: [u32; 109], // This array of 32-bit integer fields contains the first 109 FAT sector locations of the compound file.
+pub struct OleFileHeader {
+    raw_buffer: [u8; 204],
+}
+
+impl OleFileHeader {
+    /// Identification signature for the compound file structure;
+    /// MUST be set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1
+    pub fn header_signature(&self) -> [u8; 8] {
+        [
+            self.raw_buffer[0],
+            self.raw_buffer[1],
+            self.raw_buffer[2],
+            self.raw_buffer[3],
+            self.raw_buffer[4],
+            self.raw_buffer[5],
+            self.raw_buffer[6],
+            self.raw_buffer[7],
+        ]
+    }
+
+    /// Reserved and unused class ID that MUST be set to all zeroes
+    pub fn header_clsid(&self) -> [u8; 16] {
+        todo!()
+    }
+
+    /// Version number for nonbreaking changes;
+    /// SHOULD be set to 0x003E if the major version field is either 0x0003 or 0x0004
+    pub fn minor_version(&self) -> u16 {
+        todo!()
+    }
+
+    /// Version number for breaking changes;
+    /// MUST be set to either 0x0003 (version 3) or 0x0004 (version 4)
+    pub fn major_version(&self) -> u16 {
+        todo!()
+    }
+
+    /// MUST be set to 0xFFFE;
+    /// a byte order mark for all integer fields, specifying little-endian byte order
+    pub fn byte_order(&self) -> u16 {
+        todo!()
+    }
+
+    /// MUST be set to 0x0009, or 0x000C, depending on the Major Version field;
+    /// the sector size of the compound file as a power of 2;
+    /// if Major Version is 3, the Sector Shift MUST be 0x0009, specifying a sector size of 512 bytes;
+    /// if Major Version is 4, the Sector Shift MUST be 0x000C, specifying a sector size of 4096 bytes
+    pub fn sector_shift(&self) -> u16 {
+        todo!()
+    }
+
+    /// MUST be set to 0x0006;
+    /// the sector size of the Mini Stream as a power of 2;
+    /// the sector size of the Mini Stream MUST be 64 bytes
+    pub fn mini_cector_shift(&self) -> u16 {
+        todo!()
+    }
+
+    /// MUST be set to all zeroes
+    pub fn reserved(&self) -> [u8; 6] {
+        todo!()
+    }
+
+    /// The count of the number of directory sectors in the compound file;
+    /// if Major Version is 3, the Number of Directory Sectors MUST be zero;
+    /// not supported for version 3 compound files
+    pub fn num_of_dir_sectiors(&self) -> Option<u32> {
+        todo!()
+    }
+
+    /// The count of the number of FAT sectors in the compound file
+    pub fn num_of_fat_sectors(&self) -> u32 {
+        todo!()
+    }
+
+    /// The starting sector number for the directory stream
+    pub fn first_dir_sector_location(&self) -> u32 {
+        todo!()
+    }
+
+    /// MAY contain a sequence number that is incremented every time the compound file is saved by an implementation that supports file transactions
+    /// MUST be set to all zeroes if file transactions are not implemented
+    pub fn transaction_sig_num(&self) -> u32 {
+        todo!()
+    }
+
+    /// MUST be set to 0x00001000.
+    /// Maximum size of a user-defined data stream that is allocated from the mini FAT and mini stream, and that cutoff is 4,096 bytes.
+    /// Any user-defined data stream that is greater than or equal to this cutoff size must be allocated as normal sectors from the FAT.
+    pub fn mini_stream_cutoff_size(&self) -> u32 {
+        todo!()
+    }
+
+    /// Starting sector number for the mini FAT
+    pub fn first_mini_fat_sector_location(&self) -> u32 {
+        todo!()
+    }
+
+    /// The count of the number of mini FAT sectors in the compound file
+    pub fn num_of_mini_fat_sectors(&self) -> u32 {
+        todo!()
+    }
+
+    /// The starting sector number for the DIFAT
+    pub fn first_difat_sector_location(&self) -> u32 {
+        todo!()
+    }
+
+    /// The count of the number of DIFAT sectors in the compound file
+    pub fn num_of_difat_sectors(&self) -> u32 {
+        todo!()
+    }
+
+    /// The first 109 FAT sector locations of the compound file
+    pub fn difat(&self) -> [u32; 109] {
+        todo!()
+    }
 }
 
 struct OleDirectoryEntry {
@@ -64,12 +156,6 @@ fn is_ole<R: Read>(reader: &mut R) -> Result<bool, io::Error> {
     let mut buf = [0u8; 8];
     reader.read_exact(&mut buf)?;
     return Ok(buf == MAGIC);
-}
-
-fn parse_header(file: &mut File) -> Result<OleFileHeader, io::Error> {
-    let mut header_signature = [0u8; 8];
-    let mut header_clsid = [0u8; 16];
-    todo!()
 }
 
 #[cfg(test)]
