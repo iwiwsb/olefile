@@ -99,9 +99,9 @@ impl OleFileHeader {
         todo!()
     }
 
-    /// MUST be set to 0x00001000.
-    /// Maximum size of a user-defined data stream that is allocated from the mini FAT and mini stream, and that cutoff is 4,096 bytes.
-    /// Any user-defined data stream that is greater than or equal to this cutoff size must be allocated as normal sectors from the FAT.
+    /// MUST be set to 0x00001000;
+    /// Maximum size of a user-defined data stream that is allocated from the mini FAT and mini stream, and that cutoff is 4,096 bytes;
+    /// Any user-defined data stream that is greater than or equal to this cutoff size must be allocated as normal sectors from the FAT
     pub fn mini_stream_cutoff_size(&self) -> u32 {
         todo!()
     }
