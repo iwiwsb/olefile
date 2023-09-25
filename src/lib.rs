@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 // property types
 const VT_EMPTY: u32 = 0;
 const VT_NULL: u32 = 1;
@@ -57,3 +59,7 @@ const CF_ENHMETAFILE: u16 = 0xE;
 
 pub mod data_structures;
 pub mod ole_file;
+
+pub trait Validation {
+    fn validate(&self);
+}

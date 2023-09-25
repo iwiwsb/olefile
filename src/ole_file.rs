@@ -1,12 +1,13 @@
 #[forbid(unsafe_code)]
 use crate::data_structures::FileTime;
+use crate::data_structures::{CLSID, CLSID_NULL};
+use crate::Validation;
 
-use crate::data_structures::CLSID;
+use log::{info, warn};
 use std::fs::File;
 use std::io::{self, Read};
 
 const MAGIC: [u8; 8] = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
-
 const MAXREGSECT: u32 = 0xFFFFFFFA; // Maximum regular sector number
 const DIFSECT: u32 = 0xFFFFFFFC; // Specifies a DIFAT sector in the FAT
 const FATSECT: u32 = 0xFFFFFFFD; // Specifies a FAT sector in the FAT
@@ -21,27 +22,24 @@ impl OleFileHeader {
     /// Identification signature for the compound file structure;
     /// MUST be set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1
     pub fn header_signature(&self) -> [u8; 8] {
-        [
-            self.raw_buffer[0],
-            self.raw_buffer[1],
-            self.raw_buffer[2],
-            self.raw_buffer[3],
-            self.raw_buffer[4],
-            self.raw_buffer[5],
-            self.raw_buffer[6],
-            self.raw_buffer[7],
-        ]
+        self.raw_buffer[0..8]
+            .try_into()
+            .expect("The signature should be 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1")
     }
 
     /// Reserved and unused class ID that MUST be set to all zeroes
-    pub fn header_clsid(&self) -> [u8; 16] {
-        todo!()
+    pub fn header_clsid(&self) -> CLSID {
+        let value: [u8; 16] = self.raw_buffer[8..0x18]
+            .try_into()
+            .expect("CLSID length should be 16 byte");
+        CLSID::from(value)
     }
 
     /// Version number for nonbreaking changes;
     /// SHOULD be set to 0x003E if the major version field is either 0x0003 or 0x0004
     pub fn minor_version(&self) -> u16 {
-        todo!()
+        let bytes: [u8; 2] = self.raw_buffer[0x18..0x20].try_into().unwrap();
+        u16::from_le_bytes(bytes)
     }
 
     /// Version number for breaking changes;
@@ -129,6 +127,25 @@ impl OleFileHeader {
     /// The first 109 FAT sector locations of the compound file
     pub fn difat(&self) -> [u32; 109] {
         todo!()
+    }
+}
+
+impl Validation for OleFileHeader {
+    fn validate(&self) {
+        if self.header_signature() != MAGIC {
+            warn!("Wrong signature!");
+        }
+
+        if self.header_clsid() != CLSID_NULL {
+            warn!("Header CLSID is non-zero!");
+        }
+
+        if self.major_version() != 3 || self.major_version() != 4 {
+            warn!("Wrong major version");
+            if self.minor_version() != 0x3E {
+                info!("Minor version is not 0x3E");
+            }
+        }
     }
 }
 
