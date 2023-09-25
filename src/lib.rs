@@ -51,12 +51,6 @@ const STGTY_LOCKBYTES: u8 = 3;
 const STGTY_PROPERTY: u8 = 4;
 const STGTY_ROOT: u8 = 5;
 
-//Clipboard formats
-const CF_BITMAP: u16 = 2;
-const CF_METAFILEPICT: u16 = 3;
-const CF_DIB: u16 = 8;
-const CF_ENHMETAFILE: u16 = 0xE;
-
 pub mod data_structures;
 pub mod ole_file;
 

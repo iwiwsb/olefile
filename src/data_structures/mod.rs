@@ -1,5 +1,14 @@
 use std::fmt::Display;
 
+/// Bitmap16 Object structure
+pub const CF_BITMAP: u16 = 2;
+/// Windows metafile
+pub const CF_METAFILEPICT: u16 = 3;
+/// DeviceIndependentBitmap Object structure
+pub const CF_DIB: u16 = 8;
+/// Enhanced Metafile
+pub const CF_ENHMETAFILE: u16 = 0xE;
+
 pub const CLSID_NULL: CLSID = CLSID {
     data1: 0,
     data2: 0,
@@ -112,6 +121,8 @@ pub struct DevModeA {
     reserved7: u32,
     reserved8: u32,
 }
+
+pub struct DvTargetDevice {}
 
 #[cfg(test)]
 mod tests {
