@@ -1,4 +1,14 @@
+
 use std::fmt::Display;
+
+/// Bitmap16 Object structure
+pub const CF_BITMAP: u16 = 2;
+/// Windows metafile
+pub const CF_METAFILEPICT: u16 = 3;
+/// DeviceIndependentBitmap Object structure
+pub const CF_DIB: u16 = 8;
+/// Enhanced Metafile
+pub const CF_ENHMETAFILE: u16 = 0xE;
 
 pub const CLSID_NULL: CLSID = CLSID {
     data1: 0,
@@ -7,6 +17,7 @@ pub const CLSID_NULL: CLSID = CLSID {
     data4: [0u8; 8],
 };
 
+#[derive(PartialEq)]
 /// A GUID, also known as a UUID, which is a 16-byte structure, intended to serve as a unique identifier for an object.
 pub struct CLSID {
     data1: u32,
@@ -15,9 +26,45 @@ pub struct CLSID {
     data4: [u8; 8],
 }
 
+impl CLSID {
+    /// Constructs new CLSID
+    pub fn new() -> Self {
+        todo!()
+    }
+}
+
+impl From<[u8; 16]> for CLSID {
+    fn from(value: [u8; 16]) -> Self {
+        let data1 = u32::from_le_bytes(value[0..4].try_into().unwrap());
+        let data2 = u16::from_le_bytes(value[4..6].try_into().unwrap());
+        let data3 = u16::from_le_bytes(value[6..8].try_into().unwrap());
+        let data4 = value[8..16].try_into().unwrap();
+
+        Self {
+            data1,
+            data2,
+            data3,
+            data4,
+        }
+    }
+}
+
 impl Display for CLSID {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        f.write_fmt(format_args!(
+            "{:X}-{:X}-{:X}-{:X}{:X}-{:X}{:X}{:X}{:X}{:X}{:X}",
+            self.data1.swap_bytes(),
+            self.data2.swap_bytes(),
+            self.data3.swap_bytes(),
+            self.data4[0],
+            self.data4[1],
+            self.data4[2],
+            self.data4[3],
+            self.data4[4],
+            self.data4[5],
+            self.data4[6],
+            self.data4[7],
+        ))
     }
 }
 
@@ -74,4 +121,21 @@ pub struct DevModeA {
     reserved6: u32,
     reserved7: u32,
     reserved8: u32,
+}
+
+pub struct DvTargetDevice {}
+
+#[cfg(test)]
+mod tests {
+    use super::CLSID;
+
+    #[test]
+    fn test_clsid_print() {
+        let clsid_string = String::from("DEADBEEF-BAAD-F00D-DEAD-BEEFDEADBEEF");
+        let clsid = CLSID::from([
+            0xDE, 0xAD, 0xBE, 0xEF, 0xBA, 0xAD, 0xF0, 0x0D, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
+            0xBE, 0xEF,
+        ]);
+        assert_eq!(clsid.to_string(), clsid_string)
+    }
 }

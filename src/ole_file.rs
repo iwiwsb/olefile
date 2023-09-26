@@ -1,12 +1,13 @@
-#[forbid(unsafe_code)]
+#![forbid(unsafe_code)]
 use crate::data_structures::FileTime;
+use crate::data_structures::{CLSID, CLSID_NULL};
+use crate::Validation;
 
-use crate::data_structures::CLSID;
+use log::{info, warn};
 use std::fs::File;
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 
 const MAGIC: [u8; 8] = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
-
 const MAXREGSECT: u32 = 0xFFFFFFFA; // Maximum regular sector number
 const DIFSECT: u32 = 0xFFFFFFFC; // Specifies a DIFAT sector in the FAT
 const FATSECT: u32 = 0xFFFFFFFD; // Specifies a FAT sector in the FAT
@@ -160,6 +161,25 @@ impl OleFileHeader {
     /// The first 109 FAT sector locations of the compound file
     pub fn difat(&self) -> [u32; 109] {
         todo!()
+    }
+}
+
+impl Validation for OleFileHeader {
+    fn validate(&self) {
+        if self.header_signature() != MAGIC {
+            warn!("Wrong signature!");
+        }
+
+        if self.header_clsid() != CLSID_NULL {
+            warn!("Header CLSID is non-zero!");
+        }
+
+        if self.major_version() != 3 || self.major_version() != 4 {
+            warn!("Wrong major version");
+            if self.minor_version() != 0x3E {
+                info!("Minor version is not 0x3E");
+            }
+        }
     }
 }
 
