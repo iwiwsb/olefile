@@ -19,10 +19,6 @@ struct OLeFileStream {
 }
 
 impl OLeFileStream {
-    fn read_ole_file_header(&self) -> OleFileHeader {
-        todo!()
-    }
-
     fn read_u8(&self) -> u8 {
         todo!()
     }
@@ -162,6 +158,13 @@ impl OleFileHeader {
     pub fn difat(&self) -> [u32; 109] {
         todo!()
     }
+}
+
+struct FATEntry;
+
+struct FATSector {
+    array_size: usize,
+    entries: Box<[FATEntry]>,
 }
 
 impl Validation for OleFileHeader {
