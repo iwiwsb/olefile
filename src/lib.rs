@@ -57,3 +57,9 @@ pub mod ole_file;
 pub trait Validation {
     fn validate(&self);
 }
+
+pub struct Field<T> {
+    data: T,
+    offset: usize,
+    meaning: String,
+}

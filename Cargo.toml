@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 log = { version = "0.4", features = ["std"] }
-nom = { version = "7.1" }
+chrono = { version = "0.4" }

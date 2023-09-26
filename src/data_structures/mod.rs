@@ -1,5 +1,5 @@
-
-use std::fmt::Display;
+use chrono::{prelude::*, Duration};
+use std::{fmt::Display, fs::File};
 
 /// Bitmap16 Object structure
 pub const CF_BITMAP: u16 = 2;
@@ -72,6 +72,27 @@ impl Display for CLSID {
 pub struct FileTime {
     low_date_time: u32,
     high_date_time: u32,
+}
+
+impl From<FileTime> for DateTime<Utc> {
+    fn from(value: FileTime) -> Self {
+        let start = Utc.with_ymd_and_hms(1601, 1, 1, 1, 0, 0).unwrap();
+        let duration = Duration::nanoseconds((u64::from(value) * 100) as i64);
+        start + duration
+    }
+}
+
+impl From<FileTime> for u64 {
+    fn from(value: FileTime) -> Self {
+        let bytes = [
+            value.high_date_time.to_le_bytes(),
+            value.low_date_time.to_le_bytes(),
+        ]
+        .concat();
+        u64::from_le_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+        ])
+    }
 }
 
 /// Initialization data for a printer

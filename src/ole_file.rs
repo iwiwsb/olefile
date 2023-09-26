@@ -14,34 +14,50 @@ const FATSECT: u32 = 0xFFFFFFFD; // Specifies a FAT sector in the FAT
 const ENDOFCHAIN: u32 = 0xFFFFFFFE; // End of a linked chain of sectors
 const FREESECT: u32 = 0xFFFFFFFF; // Specifies an unallocated sector in the FAT, Mini FAT, or DIFAT
 
-struct OLeFileStream {
-    stream: Cursor<Box<[u8]>>,
+struct OLeFileBuffer {
+    buffer: Cursor<Box<[u8]>>,
 }
 
-impl OLeFileStream {
-    fn read_u8(&self) -> u8 {
+impl OLeFileBuffer {
+    pub fn read_ole_file_header(&self) -> OleFileHeader {
         todo!()
     }
 
-    fn read_u16(&self) -> u16 {
+    pub fn read_fat_sector(&self) -> FATArray {
         todo!()
     }
 
-    fn read_u32(&self) -> u32 {
+    pub fn read_mini_fat_sector(&self) -> MiniFATSector {
         todo!()
     }
 
-    fn read_bits(&self, n: usize) -> Vec<bool> {
+    pub fn read_difat_array(&self) -> DIFATArray {
         todo!()
     }
+}
 
-    fn seek(&mut self, pos: SeekFrom) -> Result<u64, io::Error> {
-        self.stream.seek(pos)
-    }
+trait ReadU8 {
+    fn read_u8(&self) -> u8;
+}
 
-    fn skip_bits(&mut self) {
-        todo!()
-    }
+trait ReadU16LE {
+    fn read_u16_le(&self) -> u16;
+}
+
+trait ReadU16BE {
+    fn read_u16_be(&self) -> u16;
+}
+
+trait ReadU32LE {
+    fn read_u32_le(&self) -> u32;
+}
+
+trait ReadU32BE {
+    fn read_u32_be(&self) -> u32;
+}
+
+trait ReadBits {
+    fn read_bits(&self, n: usize) -> Vec<bool>;
 }
 
 pub struct OleFileHeader {
@@ -160,12 +176,21 @@ impl OleFileHeader {
     }
 }
 
-struct FATEntry;
+struct FATSector;
 
-struct FATSector {
+struct FATArray {
     array_size: usize,
-    entries: Box<[FATEntry]>,
+    entries: Box<[FATSector]>,
 }
+
+struct MiniFATSector {}
+
+struct MiniFatArray {
+    array_size: usize,
+    entries: Box<[MiniFATSector]>,
+}
+
+struct DIFATArray {}
 
 impl Validation for OleFileHeader {
     fn validate(&self) {
