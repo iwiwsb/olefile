@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 // property types
 const VT_EMPTY: u32 = 0;
 const VT_NULL: u32 = 1;

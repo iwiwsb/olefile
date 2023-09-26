@@ -1,5 +1,12 @@
 use std::fmt::Display;
 
+pub const CLSID_NULL: CLSID = CLSID {
+    data1: 0,
+    data2: 0,
+    data3: 0,
+    data4: [0u8; 8],
+};
+
 /// A GUID, also known as a UUID, which is a 16-byte structure, intended to serve as a unique identifier for an object.
 pub struct CLSID {
     data1: u32,

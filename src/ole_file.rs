@@ -3,7 +3,7 @@ use crate::data_structures::FileTime;
 
 use crate::data_structures::CLSID;
 use std::fs::File;
-use std::io::{self, Read};
+use std::io::{self, Cursor, Read, Seek, SeekFrom};
 
 const MAGIC: [u8; 8] = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
 
@@ -13,28 +13,59 @@ const FATSECT: u32 = 0xFFFFFFFD; // Specifies a FAT sector in the FAT
 const ENDOFCHAIN: u32 = 0xFFFFFFFE; // End of a linked chain of sectors
 const FREESECT: u32 = 0xFFFFFFFF; // Specifies an unallocated sector in the FAT, Mini FAT, or DIFAT
 
+struct OLeFileStream {
+    stream: Cursor<Box<[u8]>>,
+}
+
+impl OLeFileStream {
+    fn read_ole_file_header(&self) -> OleFileHeader {
+        todo!()
+    }
+
+    fn read_u8(&self) -> u8 {
+        todo!()
+    }
+
+    fn read_u16(&self) -> u16 {
+        todo!()
+    }
+
+    fn read_u32(&self) -> u32 {
+        todo!()
+    }
+
+    fn read_bits(&self, n: usize) -> Vec<bool> {
+        todo!()
+    }
+
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64, io::Error> {
+        self.stream.seek(pos)
+    }
+
+    fn skip_bits(&mut self) {
+        todo!()
+    }
+}
+
 pub struct OleFileHeader {
-    raw_buffer: [u8; 204],
+    header_signature: [u8; 8],
+    header_clsid: [u8; 16],
+    minor_version: [u8; 2],
+    major_version: [u8; 2],
+    byte_order: [u8; 2],
+    sector_shift: [u8; 2],
+    mini_cector_shift: [u8; 2],
 }
 
 impl OleFileHeader {
     /// Identification signature for the compound file structure;
     /// MUST be set to the value 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1
     pub fn header_signature(&self) -> [u8; 8] {
-        [
-            self.raw_buffer[0],
-            self.raw_buffer[1],
-            self.raw_buffer[2],
-            self.raw_buffer[3],
-            self.raw_buffer[4],
-            self.raw_buffer[5],
-            self.raw_buffer[6],
-            self.raw_buffer[7],
-        ]
+        todo!()
     }
 
-    /// Reserved and unused class ID that MUST be set to all zeroes
-    pub fn header_clsid(&self) -> [u8; 16] {
+    /// Reserved and unused class ID that MUST always be [`CLSID_NULL`](crate::data_structures::CLSID_NULL)
+    pub fn header_clsid(&self) -> CLSID {
         todo!()
     }
 
@@ -133,19 +164,19 @@ impl OleFileHeader {
 }
 
 struct OleDirectoryEntry {
-    name: [u16; 64],
-    namelength: u16,
-    object_type: u8,
+    name: [u8; 128],
+    namelength: [u8; 2],
+    object_type: [u8; 1],
     color_flag: bool,
-    left_sibling_id: u32,
-    right_sibling_id: u32,
-    child_id: u32,
-    clsid: CLSID,
-    state_bits: u32,
-    creation_time: FileTime,
-    modified_time: FileTime,
-    total_stream_size_low: u32,
-    total_stream_size_high: u32,
+    left_sibling_id: [u8; 4],
+    right_sibling_id: [u8; 4],
+    child_id: [u8; 4],
+    clsid: [u8; 16],
+    state_bits: [u8; 4],
+    creation_time: [u8; 8],
+    modified_time: [u8; 8],
+    total_stream_size_low: [u8; 4],
+    total_stream_size_high: [u8; 4],
 }
 
 pub fn is_ole_file(file: &mut File) -> Result<bool, io::Error> {
