@@ -1,5 +1,5 @@
 use chrono::{prelude::*, Duration};
-use std::{fmt::Display, fs::File};
+use std::fmt::Display;
 
 /// Bitmap16 Object structure
 pub const CF_BITMAP: u16 = 2;
@@ -19,6 +19,8 @@ pub const CLSID_NULL: CLSID = CLSID {
 
 #[derive(PartialEq)]
 /// A GUID, also known as a UUID, which is a 16-byte structure, intended to serve as a unique identifier for an object.
+///
+#[derive(Debug)]
 pub struct CLSID {
     data1: u32,
     data2: u16,
@@ -33,12 +35,20 @@ impl CLSID {
     }
 }
 
+impl Default for CLSID {
+    fn default() -> Self {
+        CLSID_NULL
+    }
+}
+
 impl From<[u8; 16]> for CLSID {
     fn from(value: [u8; 16]) -> Self {
-        let data1 = u32::from_le_bytes(value[0..4].try_into().unwrap());
-        let data2 = u16::from_le_bytes(value[4..6].try_into().unwrap());
-        let data3 = u16::from_le_bytes(value[6..8].try_into().unwrap());
-        let data4 = value[8..16].try_into().unwrap();
+        let data1 = u32::from_le_bytes([value[0], value[1], value[2], value[3]]);
+        let data2 = u16::from_le_bytes([value[4], value[5]]);
+        let data3 = u16::from_le_bytes([value[6], value[7]]);
+        let data4 = [
+            value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15],
+        ];
 
         Self {
             data1,
@@ -69,6 +79,8 @@ impl Display for CLSID {
 }
 
 /// A 64-bit value that represents the number of 100-nanosecond intervals that have elapsed since January 1, 1601, Coordinated Universal Time (UTC)
+///
+#[derive(Debug)]
 pub struct FileTime {
     low_date_time: u32,
     high_date_time: u32,
@@ -97,51 +109,40 @@ impl From<FileTime> for u64 {
 
 /// Initialization data for a printer
 pub struct DevModeA {
-    device_name: [u8; 32], // This field is a 32-element array of 8-bit ANSI characters.
-    form_name: [u8; 32],   // This field is a 32-element array of 8-bit ANSI characters.
-    spec_version: u16, // The version of initialization data specification on which the DEVMODE structure is based.
-    driver_version: u16, //  For printers, an optional, implementation-defined version of the printer driver.
-    size: u16, // The size, in bytes, of the DEVMODE structure. The size MUST NOT include the length of any private,
-    // printer driver–specific data that might follow the DEVMODE structure's public fields.
-    driver_extra: u16, // The size, in bytes, of the private printer driver data that follows this structure.
-    fields: u32, // A bitfield that specifies the fields of the DEVMODE structure that have been
-    // initialized. If a bit is set, the corresponding field MUST be initialized and MUST be processed on
-    // receipt. If a bit is not set, the value of the corresponding field SHOULD be set to zero and MUST
-    // be ignored on receipt.
-    orientation: u16, // For printers, the orientation for output. If the DM_ORIENTATION bit is set
-    // in dmFields, this value MUST be specified.
-    paper_size: u16, // For printers, the size of the output media. If the DM_PAPERSIZE bit is set
-    // in dmFields, this value MUST be specified. The value of this field SHOULD be one of the following,
-    // or it MAY be a device-specific value that is greater than or equal to 0x0100.
-    paper_length: u16, // If the DM_PAPERLENGTH bit is set in the dmFields field, the value of
-    // this field specifies the length of the paper, in tenths of a millimeter, to use in the printer for which
-    // the job is destined.
-    paper_width: u16, // : If the DM_PAPERWIDTH bit is set in the dmFields field, the value of this
-    // field specifies the width of the paper, in tenths of a millimeter, to use in the printer for which the
-    // job is destined.
-    scale: u16,
-    copies: u16,
-    default_source: u16,
-    print_quality: u16,
-    color: u16,
-    duplex: u16,
-    y_res: u16,
-    tt_option: u16,
-    collate: u16,
-    reserved0: u16,
-    reserved1: u32,
-    reserved2: u32,
-    reserved3: u32,
-    nup: u32,
-    reserved4: u32,
-    icm_method: u32,
-    icm_intent: u32,
-    media_type: u32,
-    dither_type: u32,
-    reserved5: u32,
-    reserved6: u32,
-    reserved7: u32,
-    reserved8: u32,
+    pub device_name: String,
+    pub form_name: String,
+    pub spec_version: u16,
+    pub driver_version: u16,
+    pub size: u16,
+    pub driver_extra: u16,
+    pub fields: u32,
+    pub orientation: u16,
+    pub paper_size: u16,
+    pub paper_length: u16,
+    pub paper_width: u16,
+    pub scale: u16,
+    pub copies: u16,
+    pub default_source: u16,
+    pub print_quality: u16,
+    pub color: u16,
+    pub duplex: u16,
+    pub y_res: u16,
+    pub tt_option: u16,
+    pub collate: u16,
+    pub reserved0: u16,
+    pub reserved1: u32,
+    pub reserved2: u32,
+    pub reserved3: u32,
+    pub nup: u32,
+    pub reserved4: u32,
+    pub icm_method: u32,
+    pub icm_intent: u32,
+    pub media_type: u32,
+    pub dither_type: u32,
+    pub reserved5: u32,
+    pub reserved6: u32,
+    pub reserved7: u32,
+    pub reserved8: u32,
 }
 
 pub struct DvTargetDevice {}
